@@ -66,7 +66,6 @@
 <div class="card">
   <h2>Student Registration</h2>
 
-  <!-- IMPORTANT: Replace action URL -->
   <form method="POST"
         action="https://script.google.com/macros/s/AKfycbyCLBfRhKU7UJbStta-pZK316z3AByZoEfAFa1lyx9ffzelOL6eKEv38v1J-IlMgf-6/exec"
         target="hiddenFrame"
@@ -84,7 +83,6 @@
     <button type="submit" id="submitBtn">Submit</button>
   </form>
 
-  <!-- Hidden iframe to capture backend response -->
   <iframe name="hiddenFrame"
           style="display:none;"
           onload="handleResponse()">
@@ -94,41 +92,50 @@
 </div>
 
 <script>
+let awaitingResponse = false;
+
 function onSubmitForm() {
   const msg = document.getElementById("msg");
   const btn = document.getElementById("submitBtn");
 
+  awaitingResponse = true;
   msg.style.color = "black";
   msg.innerText = "Submitting...";
   btn.disabled = true;
 }
 
 function handleResponse() {
+  if (!awaitingResponse) return;
+
   const iframe = document.getElementsByName("hiddenFrame")[0];
   if (!iframe || !iframe.contentDocument) return;
 
-  const response = iframe.contentDocument.body.innerText.trim();
+  const text = iframe.contentDocument.body.innerText.trim();
+
+  // 🔑 Ignore empty iframe loads
+  if (!text) return;
+
+  awaitingResponse = false;
+
   const msg = document.getElementById("msg");
   const btn = document.getElementById("submitBtn");
 
-  if (response === "SUCCESS") {
+  if (text === "SUCCESS") {
     msg.style.color = "green";
     msg.innerText = "Registration successful!";
 
-    // Clear fields
     document.getElementById("name").value = "";
     document.getElementById("roll").value = "";
     document.getElementById("dob").value  = "";
 
-    // Keep button disabled (prevents repeat)
     btn.disabled = true;
   }
-  else if (response === "DUPLICATE") {
+  else if (text === "DUPLICATE") {
     msg.style.color = "red";
     msg.innerText = "Already registered!";
     btn.disabled = false;
   }
-  else if (response === "MISSING") {
+  else if (text === "MISSING") {
     msg.style.color = "red";
     msg.innerText = "All fields are mandatory!";
     btn.disabled = false;
