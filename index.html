@@ -13,12 +13,13 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
     .card {
       background: #ffffff;
       padding: 25px;
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
@@ -35,6 +36,7 @@
       width: 100%;
       padding: 8px;
       margin-top: 5px;
+      box-sizing: border-box;
     }
     button {
       margin-top: 20px;
@@ -54,6 +56,7 @@
       margin-top: 15px;
       text-align: center;
       font-weight: bold;
+      min-height: 20px;
     }
   </style>
 </head>
@@ -63,8 +66,9 @@
 <div class="card">
   <h2>Student Registration</h2>
 
+  <!-- IMPORTANT: Replace action URL -->
   <form method="POST"
-        action="https://script.google.com/macros/s/AKfycbznr4EkhxHE-yTPPufDeDHm_YJTqE18XvAsZ99vTmiFxs9qZd8dIU0fMbFWXdT0xTAr/exec"
+        action="https://script.google.com/macros/s/AKfycbyCLBfRhKU7UJbStta-pZK316z3AByZoEfAFa1lyx9ffzelOL6eKEv38v1J-IlMgf-6/exec"
         target="hiddenFrame"
         onsubmit="onSubmitForm()">
 
@@ -80,6 +84,7 @@
     <button type="submit" id="submitBtn">Submit</button>
   </form>
 
+  <!-- Hidden iframe to capture backend response -->
   <iframe name="hiddenFrame"
           style="display:none;"
           onload="handleResponse()">
@@ -91,8 +96,11 @@
 <script>
 function onSubmitForm() {
   const msg = document.getElementById("msg");
+  const btn = document.getElementById("submitBtn");
+
   msg.style.color = "black";
   msg.innerText = "Submitting...";
+  btn.disabled = true;
 }
 
 function handleResponse() {
@@ -107,10 +115,12 @@ function handleResponse() {
     msg.style.color = "green";
     msg.innerText = "Registration successful!";
 
+    // Clear fields
     document.getElementById("name").value = "";
     document.getElementById("roll").value = "";
     document.getElementById("dob").value  = "";
 
+    // Keep button disabled (prevents repeat)
     btn.disabled = true;
   }
   else if (response === "DUPLICATE") {
@@ -125,7 +135,7 @@ function handleResponse() {
   }
   else {
     msg.style.color = "red";
-    msg.innerText = "Submission error!";
+    msg.innerText = "Submission error. Please try again.";
     btn.disabled = false;
   }
 }
